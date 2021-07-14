@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">Video Splitter for Status or Story</string>
+    <string name="startFrom">Start from</string>
+    <string name="duration">Duration</string>
+    <string name="save_button">Save</string>
+    <string name="default_start_from">0</string>
+    <string name="duration_hint">Duration of each split</string>
+    <string name="trim_button">Start Trim</string>
+    <string name="ask_for_storage_perm">Please provide storage permission.</string>
+    <string name="default_duration_of_each_split">5</string>
+    <string name="min_duration_error">Duration cannot be less than 5 and more than duration of video itself</string>
+    <string name="trim_completed_file_save_location">Trim Completed and trimmed files are saved to </string>
+    <string name="start_from_duration_error">Start from value can not be less than 0 and more than duration of video itself</string>
+    <string name="min_and_start_from_duration_error">Please provide a valid start from value and duration more than 5</string>
+    <string name="empty_values_error">Please provide valid values</string>
+</resources>

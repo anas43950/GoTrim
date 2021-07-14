@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="utf-8"?><!--<com.google.android.exoplayer2.ui.PlayerView xmlns:android="http://schemas.android.com/apk/res/android"-->
+<!--    android:id="@+id/myexoplayer_control_view"-->
+<!--    android:layout_width="match_parent"-->
+<!--    android:layout_height="match_parent">-->
+
+<!--</com.google.android.exoplayer2.ui.PlayerView>-->
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        >
+
+
+
+
+
+        <VideoView
+            android:id="@+id/videoView"
+            android:layout_width="match_parent"
+            android:layout_height="600dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginRight="8dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:layout_height="100dp" />
+
+        <ImageButton
+            android:id="@+id/imageButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/play"
+            app:layout_constraintBottom_toBottomOf="@+id/videoView"
+            app:layout_constraintEnd_toEndOf="@+id/videoView"
+            app:layout_constraintStart_toStartOf="@+id/videoView"
+            app:layout_constraintTop_toTopOf="@+id/videoView" />
+        <SeekBar
+            android:layout_width="match_parent"
+            android:layout_height="24dp"
+            android:id="@+id/seekBar"
+            app:layout_constraintBottom_toBottomOf="@id/videoView"
+            app:layout_constraintLeft_toLeftOf="@id/videoView"
+            app:layout_constraintLeft_toRightOf="@id/videoView"
+            />
+
+        <LinearLayout
+            android:id="@+id/linearLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintTop_toBottomOf="@id/videoView">
+
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.4"
+                android:orientation="vertical"
+                tools:layout_editor_absoluteX="37dp">
+
+                <TextView
+                    android:id="@+id/textView"
+                    style="@style/TextFieldStyle"
+                    android:text="@string/startFrom"
+                    android:textSize="20sp"
+                    tools:layout_editor_absoluteX="65dp"
+                    tools:layout_editor_absoluteY="136dp" />
+
+                <TextView
+                    android:id="@+id/textView2"
+                    style="@style/TextFieldStyle"
+                    android:text="@string/duration"
+                    android:textSize="20sp"
+                    tools:layout_editor_absoluteX="72dp"
+                    tools:layout_editor_absoluteY="206dp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.6"
+                android:orientation="vertical"
+
+                >
+
+
+                <EditText
+                    android:id="@+id/start_from_edit_text"
+                    style="@style/EditTextFieldStyle"
+                    android:layout_width="match_parent"
+
+                    android:ems="10"
+                    android:inputType="number"
+                    android:text="@string/default_start_from"
+                    tools:layout_editor_absoluteX="248dp"
+                    tools:layout_editor_absoluteY="136dp"
+                    />
+
+                <EditText
+                    android:id="@+id/duration_edit_text"
+                    style="@style/EditTextFieldStyle"
+                    android:layout_width="match_parent"
+                    android:ems="10"
+                    android:text="@string/default_duration_of_each_split"
+                    android:inputType="number"
+                    tools:layout_editor_absoluteX="248dp"
+                    tools:layout_editor_absoluteY="206dp" />
+            </LinearLayout>
+        </LinearLayout>
+
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/linearLayout"
+            android:layout_marginTop="32dp">
+
+            <Button
+                android:id="@+id/TrimButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:text="@string/trim_button" />
+            <!-- Linear progress indicator -->
+
+
+
+        </LinearLayout>
+
+
+
+
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+
+</ScrollView>
