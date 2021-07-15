@@ -1,13 +1,11 @@
 package com.videosplitterforstatusorstory;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.constraintlayout.widget.ConstraintLayout;
-
 
 import android.content.ContentValues;
 import android.content.Intent;
 import android.content.res.Configuration;
-import android.graphics.drawable.AnimationDrawable;
+import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -17,22 +15,23 @@ import android.os.Looper;
 import android.provider.MediaStore;
 
 import android.text.Editable;
+
 import android.text.TextWatcher;
+
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.SeekBar;
+import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.VideoView;
 
 
-import com.arthenica.mobileffmpeg.ExecuteCallback;
 import com.arthenica.mobileffmpeg.FFmpeg;
 import com.google.android.material.progressindicator.CircularProgressIndicator;
-import com.google.android.material.progressindicator.LinearProgressIndicator;
 
 import java.io.File;
 
@@ -50,24 +49,28 @@ public class TrimmerActivity extends AppCompatActivity {
     private static final String app_folder = root + "/VideoTrimmer/";
     private SeekBar seekBar;
     private Handler mHandler;
-    AnimationDrawable animationDrawable;
-    CircularProgressIndicator progressIndicator;
+    private LinearLayout linearLayout;
+    private TextView trimCompletedTextView;
+    private CircularProgressIndicator circularProgressIndicator;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_trimmer);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setBackgroundDrawable(new ColorDrawable(getResources().getColor(R.color.colorPrimary)));
+        }
         //Initializing Views
         mVideoView = findViewById(R.id.videoView);
         trimVideoButton = findViewById(R.id.TrimButton);
         startFromPositionEditText = findViewById(R.id.start_from_edit_text);
         durationEditText = findViewById(R.id.duration_edit_text);
-        progressIndicator = findViewById(R.id.progressIndicator);
+        linearLayout = findViewById(R.id.linearLayout);
+        circularProgressIndicator = findViewById(R.id.progressIndicator);
 
 
-
-
+        circularProgressIndicator.setVisibility(View.GONE);
         startFromPositionEditText.setRawInputType(Configuration.KEYBOARD_12KEY);
         durationEditText.setRawInputType(Configuration.KEYBOARD_12KEY);
         seekBar = findViewById(R.id.seekBar);
@@ -117,13 +120,25 @@ public class TrimmerActivity extends AppCompatActivity {
         mVideoView.setOnPreparedListener(l -> {
             updateProgressBar();
         });
+        mVideoView.setOnClickListener(l -> {
+            if (mImageButton.getVisibility() == View.INVISIBLE) {
+                mVideoView.pause();
+                mImageButton.setVisibility(View.VISIBLE);
+            } else if (mImageButton.getVisibility() == View.VISIBLE) {
+                mImageButton.setVisibility(View.INVISIBLE);
+            }
+        });
+        mVideoView.setOnCompletionListener(l -> {
+            mVideoView.seekTo(1);
+            mVideoView.start();
+        });
 
         //setting seekBarChangeListener
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 if (fromUser) {
-                    int i = (seekBar.getProgress()) / 1000;
+                    int i = progress / 1000;
                     startFromPositionEditText.setText(String.valueOf(i));
                 }
 
@@ -163,7 +178,9 @@ public class TrimmerActivity extends AppCompatActivity {
                     Toast.makeText(this, R.string.min_and_start_from_duration_error, Toast.LENGTH_SHORT).show();
 
                 } else {
-                    setContentView(R.layout.progress_bar);
+                    linearLayout.setVisibility(View.GONE);
+                    trimVideoButton.setVisibility(View.GONE);
+
                     executeTrimCommand(startFromPosition, duration);
                 }
             } catch (Exception e) {
@@ -174,9 +191,12 @@ public class TrimmerActivity extends AppCompatActivity {
         mImageButton.setOnClickListener(l -> {
             if (!mVideoView.isPlaying()) {
                 mVideoView.start();
+                mImageButton.setVisibility(View.INVISIBLE);
 
             } else {
                 mVideoView.pause();
+                mImageButton.setVisibility(View.VISIBLE);
+
             }
 
         });
@@ -245,16 +265,16 @@ public class TrimmerActivity extends AppCompatActivity {
 
 //        String[] complexCommand1 = {"-ss", "" + startMs, "-y", "-i", videoUrl, "-t", "" + eachSplitDuration, "-vcodec", "mpeg4", "-b:v", "2097152", "-b:a", "48000", "-ac", "2", "-ar", "22050", filePath};
         String[] complexCommand = {"-ss", "" + startMs, "-i", videoUrl, "-f", "segment", "-segment_time", "" + eachSplitDuration, "-reset_timestamps", "1", "-vcodec", "copy", "-b:v", "2097152", "-b:a", "48000", "-ac", "2", "-ar", "22050", filePath};
-        String[] filePathForToastArray = filePath.split(filePrefix);
-        String filePathForToast = filePathForToastArray[0];
+        String[] filePathArray = filePath.split(filePrefix);
 
 
         new Thread(() -> {
             FFmpeg.execute(complexCommand);
             runOnUiThread(() -> {
-                setContentView(R.layout.progress_bar);
+                Intent startCompletedActivityIntent = new Intent(TrimmerActivity.this, CompletedActivity.class);
 
-                Toast.makeText(this, R.string.trim_completed_file_save_location + filePathForToast, Toast.LENGTH_SHORT).show();
+                startCompletedActivityIntent.putExtra("savedVideoPath", filePathArray[0]);
+                startActivity(startCompletedActivityIntent);
             });
 
         }).start();
