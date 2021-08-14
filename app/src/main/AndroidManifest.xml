@@ -16,8 +16,10 @@
 
         android:theme="@style/Theme.VideoSplitterForStatusOrStory"
         tools:replace="android:theme">
-        <activity android:name=".CompletedActivity"></activity>
-        <activity android:name=".TrimmerActivity" />
+        <activity android:name=".CompletedActivity" />
+        <activity
+            android:name=".TrimmerActivity"
+            android:noHistory="true" />
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

@@ -30,10 +30,14 @@ import android.widget.Toast;
 import android.widget.VideoView;
 
 
+import com.arthenica.mobileffmpeg.AsyncFFmpegExecuteTask;
+import com.arthenica.mobileffmpeg.ExecuteCallback;
 import com.arthenica.mobileffmpeg.FFmpeg;
+import com.arthenica.mobileffmpeg.FFmpegExecution;
 import com.google.android.material.progressindicator.CircularProgressIndicator;
 
 import java.io.File;
+import java.util.concurrent.Executors;
 
 
 public class TrimmerActivity extends AppCompatActivity {
@@ -268,16 +272,35 @@ public class TrimmerActivity extends AppCompatActivity {
         String[] filePathArray = filePath.split(filePrefix);
 
 
-        new Thread(() -> {
-            FFmpeg.execute(complexCommand);
-            runOnUiThread(() -> {
-                Intent startCompletedActivityIntent = new Intent(TrimmerActivity.this, CompletedActivity.class);
+//        new Thread(() -> {
+//
+//            FFmpeg.execute(complexCommand);
+//            runOnUiThread(() -> {
+//                Intent startCompletedActivityIntent = new Intent(TrimmerActivity.this, CompletedActivity.class);
+//
+//                startCompletedActivityIntent.putExtra("savedVideoPath", filePathArray[0]);
+//                startActivity(startCompletedActivityIntent);
+//            });
+//
+//        }).start();
+        Runnable executeCommandOnBGThread = new Runnable() {
+            @Override
+            public void run() {
+                FFmpeg.execute(complexCommand);
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Intent startCompletedActivityIntent = new Intent(TrimmerActivity.this, CompletedActivity.class);
 
-                startCompletedActivityIntent.putExtra("savedVideoPath", filePathArray[0]);
-                startActivity(startCompletedActivityIntent);
-            });
+                        startCompletedActivityIntent.putExtra("savedVideoPath", filePathArray[0]);
+                        startActivity(startCompletedActivityIntent);
+                    }
+                });
 
-        }).start();
+            }
+        };
+
+        Executors.newSingleThreadExecutor().execute(executeCommandOnBGThread);
 
 
     }
