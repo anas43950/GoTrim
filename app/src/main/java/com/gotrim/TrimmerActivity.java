@@ -1,4 +1,4 @@
-package com.videosplitterforstatusorstory;
+package com.gotrim;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -30,13 +30,11 @@ import android.widget.Toast;
 import android.widget.VideoView;
 
 
-import com.arthenica.mobileffmpeg.AsyncFFmpegExecuteTask;
-import com.arthenica.mobileffmpeg.ExecuteCallback;
 import com.arthenica.mobileffmpeg.FFmpeg;
-import com.arthenica.mobileffmpeg.FFmpegExecution;
 import com.google.android.material.progressindicator.CircularProgressIndicator;
 
 import java.io.File;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 
@@ -56,6 +54,7 @@ public class TrimmerActivity extends AppCompatActivity {
     private LinearLayout linearLayout;
     private TextView trimCompletedTextView;
     private CircularProgressIndicator circularProgressIndicator;
+    private ExecutorService executor;
 
 
     @Override
@@ -72,13 +71,12 @@ public class TrimmerActivity extends AppCompatActivity {
         durationEditText = findViewById(R.id.duration_edit_text);
         linearLayout = findViewById(R.id.linearLayout);
         circularProgressIndicator = findViewById(R.id.progressIndicator);
-
-
         circularProgressIndicator.setVisibility(View.GONE);
         startFromPositionEditText.setRawInputType(Configuration.KEYBOARD_12KEY);
         durationEditText.setRawInputType(Configuration.KEYBOARD_12KEY);
         seekBar = findViewById(R.id.seekBar);
         ImageButton mImageButton = findViewById(R.id.imageButton);
+        executor = Executors.newFixedThreadPool(1);
         mHandler = new Handler(Looper.getMainLooper());
         //Setting startFromPosition text change listener to keep seekbar in sync with edittext value
         startFromPositionEditText.addTextChangedListener(new TextWatcher() {
@@ -112,9 +110,9 @@ public class TrimmerActivity extends AppCompatActivity {
         videoUri = Uri.parse(intentThatStartedThisActivity.getStringExtra(MainActivity.selectedVideoPathForIntent));
         try {
             File video_file = FileUtils.getFileFromUri(this, videoUri);
+
             videoUrl = video_file.getAbsolutePath();
         } catch (Exception e) {
-            e.printStackTrace();
         }
 
 
@@ -184,8 +182,12 @@ public class TrimmerActivity extends AppCompatActivity {
                 } else {
                     linearLayout.setVisibility(View.GONE);
                     trimVideoButton.setVisibility(View.GONE);
-
-                    executeTrimCommand(startFromPosition, duration);
+                    if (videoUrl != null) {
+                        executeTrimCommand(startFromPosition, duration);
+                    }
+                    else{
+                        Toast.makeText(TrimmerActivity.this, "Sorry, this video's path is corrupt and hence it can't be trimmed.", Toast.LENGTH_SHORT).show();
+                    }
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -272,35 +274,15 @@ public class TrimmerActivity extends AppCompatActivity {
         String[] filePathArray = filePath.split(filePrefix);
 
 
-//        new Thread(() -> {
-//
-//            FFmpeg.execute(complexCommand);
-//            runOnUiThread(() -> {
-//                Intent startCompletedActivityIntent = new Intent(TrimmerActivity.this, CompletedActivity.class);
-//
-//                startCompletedActivityIntent.putExtra("savedVideoPath", filePathArray[0]);
-//                startActivity(startCompletedActivityIntent);
-//            });
-//
-//        }).start();
-        Runnable executeCommandOnBGThread = new Runnable() {
-            @Override
-            public void run() {
-                FFmpeg.execute(complexCommand);
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        Intent startCompletedActivityIntent = new Intent(TrimmerActivity.this, CompletedActivity.class);
+        executor.execute(() -> {
 
-                        startCompletedActivityIntent.putExtra("savedVideoPath", filePathArray[0]);
-                        startActivity(startCompletedActivityIntent);
-                    }
-                });
-
-            }
-        };
-
-        Executors.newSingleThreadExecutor().execute(executeCommandOnBGThread);
+            FFmpeg.execute(complexCommand);
+            runOnUiThread(() -> {
+                Intent startCompletedActivityIntent = new Intent(TrimmerActivity.this, CompletedActivity.class);
+                startCompletedActivityIntent.putExtra("savedVideoPath", filePathArray[0]);
+                startActivity(startCompletedActivityIntent);
+            });
+        });
 
 
     }

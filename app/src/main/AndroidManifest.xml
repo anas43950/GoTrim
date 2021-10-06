@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="com.videosplitterforstatusorstory">
+    package="com.gotrim">
 
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
@@ -16,11 +16,11 @@
 
         android:theme="@style/Theme.VideoSplitterForStatusOrStory"
         tools:replace="android:theme">
-        <activity android:name=".CompletedActivity" />
+        <activity android:name="com.gotrim.CompletedActivity" />
         <activity
-            android:name=".TrimmerActivity"
+            android:name="com.gotrim.TrimmerActivity"
             android:noHistory="true" />
-        <activity android:name=".MainActivity">
+        <activity android:name="com.gotrim.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Video Splitter for Status or Story</string>
+    <string name="app_name">Go Trim</string>
     <string name="startFrom">Start from</string>
     <string name="duration">Duration</string>
     <string name="save_button">Save</string>

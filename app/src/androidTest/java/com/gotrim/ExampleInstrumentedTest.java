@@ -1,4 +1,4 @@
-package com.videosplitterforstatusorstory;
+package com.gotrim;
 
 import android.content.Context;
 
